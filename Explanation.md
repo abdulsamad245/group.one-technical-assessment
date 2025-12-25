@@ -1942,8 +1942,8 @@ Once the service is running, access the interactive Swagger UI at:
 
 | Environment | URL |
 |-------------|-----|
-| Local (Sail) | [http://localhost/api/documentation](http://localhost/api/documentation) |
-| Production | `https://your-domain.com/api/documentation` |
+| Local (Sail) | [http://localhost/api/docs](http://localhost/api/docs) |
+| Production | `https://your-domain.com/api/docs` |
 
 The Swagger UI allows you to:
 - Browse all available endpoints
@@ -1954,8 +1954,10 @@ The Swagger UI allows you to:
 **OpenAPI JSON Specification:**
 
 ```
-http://localhost/api/documentation/api-docs.json
+http://localhost/api/docs/api-docs.json
 ```
+
+> **Note:** Replace `localhost` with your domain in production environments.
 
 ### Postman Collection
 
@@ -2039,27 +2041,33 @@ sail artisan apikey:generate rankmath "Postman Testing"
 
 ### Current Limitations
 
-1. **No Rate Limiting**: API endpoints don't have rate limiting configured. This should be added for production.
-
-2. **No Webhook Notifications**: Brands aren't notified of license events. Consider implementing webhooks for:
+1. **No Webhook Notifications**: Brands aren't notified of license events. Consider implementing webhooks for:
    - License expiration warnings
    - Activation/deactivation events
    - Status changes
 
-3. **No Bulk Operations**: Current API handles single operations. Bulk endpoints for provisioning multiple licenses would be valuable.
+2. **No Bulk Operations**: Current API handles single operations. Bulk endpoints for provisioning multiple licenses would be valuable.
 
-4. **No License Transfer**: Customers cannot transfer licenses between email addresses.
+3. **No License Transfer**: Customers cannot transfer licenses between email addresses.
 
-5. **No Grace Period**: Expired licenses immediately lose validity. Consider adding grace periods.
+4. **No Grace Period**: Expired licenses immediately lose validity. Consider adding grace periods.
 
-6. **No Usage Analytics**: No built-in analytics for license usage patterns.
+5. **No Usage Analytics**: No built-in analytics for license usage patterns.
 
 ### Recommended Next Steps
 
-1. **Rate Limiting**
+1. **Custom Rate Limiting per Endpoint**
+
+   Global rate limiting is configured (60 requests/minute per API key or IP). For production, consider customizing per endpoint:
    ```php
-   // Add to routes
-   Route::middleware(['throttle:60,1'])->group(...);
+   // Current global configuration in RouteServiceProvider
+   RateLimiter::for('api', function (Request $request) {
+       $identifier = $request->input('api_key_id') ?: $request->ip();
+       return Limit::perMinute(60)->by($identifier);
+   });
+
+   // Custom per-endpoint limits can be added as needed
+   RateLimiter::for('activations', fn() => Limit::perMinute(30));
    ```
 
 2. **Webhook System**

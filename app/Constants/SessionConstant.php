@@ -20,4 +20,3 @@ class SessionConstant
     public const PAYLOAD = 'payload';
     public const LAST_ACTIVITY = 'last_activity';
 }
-

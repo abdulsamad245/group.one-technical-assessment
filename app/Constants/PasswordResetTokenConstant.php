@@ -17,4 +17,3 @@ class PasswordResetTokenConstant
     public const TOKEN = 'token';
     public const CREATED_AT = 'created_at';
 }
-
