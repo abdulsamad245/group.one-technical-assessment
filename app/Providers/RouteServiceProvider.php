@@ -23,7 +23,6 @@ class RouteServiceProvider extends ServiceProvider
     protected function configureRateLimiting(): void
     {
         RateLimiter::for('api', function (Request $request) {
-            // Use API key ID if available, otherwise fall back to IP
             $identifier = $request->input('api_key_id') ?: $request->ip();
 
             return Limit::perMinute(60)->by($identifier);

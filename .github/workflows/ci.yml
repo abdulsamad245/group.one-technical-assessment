@@ -113,7 +113,7 @@ jobs:
       # 14. Run Static Analysis Only (temporarily disabled PHPCS & Pint)
       - name: Run Static Analysis Only
         run: |
-          # composer lint      
+          composer lint      
           composer phpstan    
 
       # 15. Upload coverage to Codacy
