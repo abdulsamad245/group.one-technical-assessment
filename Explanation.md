@@ -1814,14 +1814,30 @@ sail npm run dev
 
 ### Environment Variables
 
+The `.env.example` file contains all the environment variables needed to run the application:
+
 ```env
-# Application
-APP_NAME="License Service"
+APP_NAME="group.one Centralized License Service"
 APP_ENV=local
+APP_KEY=
 APP_DEBUG=true
+APP_TIMEZONE=UTC
 APP_URL=http://localhost
 
-# Database (Sail defaults)
+APP_LOCALE=en
+APP_FALLBACK_LOCALE=en
+APP_FAKER_LOCALE=en_US
+
+APP_MAINTENANCE_DRIVER=file
+APP_MAINTENANCE_STORE=database
+
+BCRYPT_ROUNDS=12
+
+LOG_CHANNEL=stack
+LOG_STACK=single
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
+
 DB_CONNECTION=mysql
 DB_HOST=mysql
 DB_PORT=3306
@@ -1829,15 +1845,56 @@ DB_DATABASE=license_service
 DB_USERNAME=sail
 DB_PASSWORD=password
 
-# Redis (for caching and queues)
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+SESSION_DOMAIN=null
+
+BROADCAST_CONNECTION=log
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=redis
+
+CACHE_STORE=redis
+CACHE_PREFIX=
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_CLIENT=phpredis
 REDIS_HOST=redis
+REDIS_PASSWORD=null
 REDIS_PORT=6379
 
-# Sentry (optional)
-SENTRY_LARAVEL_DSN=your-sentry-dsn
+MAIL_MAILER=log
+MAIL_HOST=127.0.0.1
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@mailinator.com"
+MAIL_FROM_NAME="${APP_NAME}"
 
-# Queue
-QUEUE_CONNECTION=redis
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
+VITE_APP_NAME="${APP_NAME}"
+
+# Swagger Configuration
+L5_SWAGGER_GENERATE_ALWAYS=true
+L5_SWAGGER_CONST_HOST=http://localhost/api/v1
+
+# License Service Configuration
+LICENSE_KEY_LENGTH=32
+LICENSE_ACTIVATION_LIMIT=5
+LICENSE_DEFAULT_DURATION_DAYS=365
+
+# Sentry Configuration (optional)
+SENTRY_LARAVEL_DSN=
+SENTRY_TRACES_SAMPLE_RATE=1.0
+SENTRY_PROFILES_SAMPLE_RATE=1.0
 ```
 
 ### Running Tests
@@ -1860,13 +1917,13 @@ sail test --filter=test_can_create_license
 
 ```bash
 # Run all quality checks
-sail composer quality
+composer run quality
 
 # Run individual checks
-sail composer pint        # Code formatting
-sail composer pint:test   # Check formatting without changes
-sail composer phpstan     # Static analysis
-sail composer phpcs       # PHP CodeSniffer
+composer run pint        # Code formatting
+composer run pint:test   # Check formatting without changes
+composer run phpstan     # Static analysis
+composer run phpcs       # PHP CodeSniffer
 ```
 
 ### API Documentation (Swagger/OpenAPI)
