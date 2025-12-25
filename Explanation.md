@@ -59,110 +59,131 @@ flowchart TB
         WPR[WP-Rocket.me]
         IMG[Imagify.io]
     end
-    
+
     subgraph "End-User Products"
         WPP[WordPress Plugins]
         CLI[CLI Tools]
         APP[Desktop Apps]
     end
-    
+
     subgraph "License Service"
         direction TB
         API[API Gateway<br/>Laravel Routes]
-        AUTH[Authentication<br/>API Key / Sanctum]
-        
+        APILOG[API Logger Middleware<br/>Logs All Requests]
+
+        subgraph "Authentication Layer"
+            PUB[Public Routes<br/>No Auth Required]
+            APIKEY[API Key Auth<br/>Brand Operations]
+            SANC[Sanctum Auth<br/>User Operations]
+        end
+
         subgraph "Core Services"
             LS[License Service]
             AS[Activation Service]
             CS[Customer Service]
             LKS[License Key Service]
+            AUTHS[Auth Service]
         end
-        
+
         subgraph "Data Layer"
             REPO[Repositories]
             DB[(MySQL Database)]
             CACHE[(Redis Cache)]
         end
-        
+
         subgraph "Background Jobs"
             QUEUE[Job Queue]
             EXP[Expiry Checker]
-            LOG[API Logger]
         end
     end
-    
+
     subgraph "Observability"
         SENTRY[Sentry]
-        LOGS[Application Logs]
+        LOGS[(API Logs Table)]
     end
-    
-    RM -->|Brand API| API
-    WPR -->|Brand API| API
-    IMG -->|Brand API| API
-    
-    WPP -->|Product API| API
-    CLI -->|Product API| API
-    APP -->|Product API| API
-    
-    API --> AUTH
-    AUTH --> LS
-    AUTH --> AS
-    AUTH --> CS
-    
+
+    RM -->|"Licenses API<br/>(API Key)"| API
+    WPR -->|"Licenses API<br/>(API Key)"| API
+    IMG -->|"Licenses API<br/>(API Key)"| API
+
+    WPP -->|"Activations API<br/>(No Auth)"| API
+    CLI -->|"Activations API<br/>(No Auth)"| API
+    APP -->|"Activations API<br/>(No Auth)"| API
+
+    API --> APILOG
+    APILOG --> PUB
+    APILOG --> APIKEY
+    APILOG --> SANC
+    APILOG --> LOGS
+
+    PUB --> AS
+    PUB --> LKS
+
+    APIKEY --> LS
+    APIKEY --> CS
+
+    SANC --> AUTHS
+
     LS --> REPO
     AS --> REPO
     CS --> REPO
     LKS --> REPO
-    
+    AUTHS --> REPO
+
     REPO --> DB
     REPO --> CACHE
-    
+
     LS --> QUEUE
-    AS --> QUEUE
-    
-    API --> SENTRY
-    API --> LOGS
+    QUEUE --> EXP
+
+    LS --> SENTRY
+    AS --> SENTRY
 ```
 
 ### Application Layers
 
 ```mermaid
-flowchart LR
-    subgraph "Presentation Layer"
-        CTRL[Controllers]
-        REQ[Requests]
-        RES[Resources]
+flowchart TB
+    REQ[HTTP Request]
+
+    subgraph "Middleware"
+        APILOG[API Logger]
+        AUTH[Auth Middleware]
     end
 
-    subgraph "Business Layer"
-        SVC[Services]
-        DTO[DTOs]
+    subgraph "Presentation"
+        FORMREQ[Form Request]
+        DTO[DTO]
+        CTRL[Controller]
+        RES[Resource]
+    end
+
+    subgraph "Business"
+        SVC[Service]
         EVT[Events]
+        JOB[Jobs]
     end
 
-    subgraph "Data Layer"
-        REPO[Repositories]
-        MDL[Models]
+    subgraph "Data"
+        REPO[Repository]
+        MDL[Model]
         SCP[Scopes]
     end
 
-    subgraph "Infrastructure"
-        MID[Middleware]
-        JOB[Jobs]
-        EXC[Exceptions]
+    subgraph "Storage"
+        DB[(MySQL)]
+        CACHE[(Redis)]
     end
 
-    CTRL --> REQ
-    CTRL --> RES
-    CTRL --> SVC
-    REQ --> DTO
-    SVC --> REPO
+    RESP[HTTP Response]
+
+    REQ --> APILOG --> AUTH
+    AUTH --> FORMREQ --> DTO --> CTRL
+    CTRL --> SVC --> REPO --> MDL --> SCP --> DB
+    REPO --> CACHE
     SVC --> EVT
-    REPO --> MDL
-    MDL --> SCP
-    CTRL --> MID
     SVC --> JOB
-    CTRL --> EXC
+    MDL --> SVC --> CTRL --> RES --> RESP
 ```
 
 ### Technology Stack
