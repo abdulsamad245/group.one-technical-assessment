@@ -169,8 +169,8 @@ flowchart LR
 
 | Component | Technology | Rationale |
 |-----------|------------|-----------|
-| Framework | Laravel 11 | Modern PHP, excellent ecosystem, battle-tested |
-| Database | MySQL 8.0 | ACID compliance, JSON support, proven scalability |
+| Framework | Laravel 11.x | Modern PHP, excellent ecosystem, battle-tested |
+| Database | MySQL 8.x | ACID compliance, JSON support, proven scalability |
 | Cache | Redis | High-performance caching, queue backend |
 | Authentication | API Keys + Sanctum | API key for brands, Sanctum for admin users |
 | Error Tracking | Sentry | Real-time error monitoring and alerting |
