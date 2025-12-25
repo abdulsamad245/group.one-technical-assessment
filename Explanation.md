@@ -130,28 +130,30 @@ flowchart TB
 flowchart LR
     subgraph "Presentation Layer"
         CTRL[Controllers]
-        REQ[Form Requests]
+        REQ[Requests]
         RES[Resources]
     end
-    
+
     subgraph "Business Layer"
         SVC[Services]
         DTO[DTOs]
         EVT[Events]
     end
-    
+
     subgraph "Data Layer"
         REPO[Repositories]
         MDL[Models]
         SCP[Scopes]
     end
-    
+
     subgraph "Infrastructure"
         MID[Middleware]
         JOB[Jobs]
         EXC[Exceptions]
     end
-    
+
+    CTRL --> REQ
+    CTRL --> RES
     CTRL --> SVC
     REQ --> DTO
     SVC --> REPO
@@ -329,6 +331,7 @@ erDiagram
     BRAND ||--o{ LICENSE : "has"
     BRAND ||--o{ API_KEY : "has"
     BRAND ||--o{ LICENSE_KEY : "has"
+    BRAND ||--o{ USER : "has"
     LICENSE_KEY ||--o{ LICENSE : "contains"
     LICENSE_KEY ||--o{ ACTIVATION : "has (through license)"
     LICENSE ||--o{ ACTIVATION : "has"
@@ -346,6 +349,18 @@ erDiagram
         datetime created_at
         datetime updated_at
         datetime deleted_at
+    }
+
+    USER {
+        uuid id PK
+        uuid brand_id FK
+        string name
+        string email UK
+        string password "hashed"
+        datetime email_verified_at
+        string remember_token
+        datetime created_at
+        datetime updated_at
     }
 
     LICENSE_KEY {
@@ -425,6 +440,20 @@ erDiagram
         string user_agent
         datetime created_at
     }
+
+    API_LOG {
+        uuid id PK
+        string method
+        string path
+        integer status_code
+        string ip_address
+        string user_agent
+        json request_headers
+        json request_body
+        json response_body
+        float duration_ms
+        datetime created_at
+    }
 ```
 
 ### Key Design Decisions
@@ -488,28 +517,28 @@ All endpoints are versioned under `/api/v1/` to ensure backward compatibility as
 
 | Method | Use Case | Header |
 |--------|----------|--------|
-| API Key | Brand systems, Product integrations | `X-API-Key: {key}` |
-| Sanctum Token | Admin dashboard, User authentication | `Authorization: Bearer {token}` |
+| None (Public) | License activation, deactivation, status check | - |
+| API Key | Brand license management, customer queries | `X-API-Key: {key}` |
+| Sanctum Token | Auth endpoints (logout), API key creation | `Authorization: Bearer {token}` |
 
 ### Endpoint Overview
 
-#### Public Authentication Routes
+#### Public Routes (No Authentication Required)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/v1/auth/register` | Register a new user and brand |
-| `POST` | `/api/v1/auth/login` | Login and get Sanctum token |
-
-#### Public License Routes
+These endpoints are called by end-user products (WordPress plugins, apps, CLIs) and do not require authentication:
 
 | Method | Endpoint | Description | User Story |
 |--------|----------|-------------|------------|
+| `POST` | `/api/v1/auth/register` | Register a new user and brand | - |
+| `POST` | `/api/v1/auth/login` | Login and get Sanctum token | - |
 | `GET` | `/api/v1/license-keys/key/{key}` | Get license key details | US4 |
 | `POST` | `/api/v1/activations` | Activate a license | US3 |
 | `POST` | `/api/v1/deactivations` | Deactivate a seat | US5 |
 | `GET` | `/api/v1/activations/status` | Check license status | US4 |
 
 #### Sanctum Authenticated Routes
+
+These endpoints require a valid Sanctum Bearer token:
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -1665,29 +1694,21 @@ composer quality
 
 ## Additional Features (Not Exposed via API)
 
-Some features exist in the codebase but are not currently exposed via API endpoints as they were not part of the user stories:
+Some features exist in the codebase but are not currently exposed via API endpoints as they were not part of the user stories. Below are notable examples:
 
 ### 1. Brand Management
 
 The `Brand` model and `BrandService` exist for managing brands, but brand CRUD endpoints are not exposed. Brands are currently created via database seeding or direct database access.
 
-### 2. User Authentication (Sanctum)
-
-User registration and login endpoints exist (`AuthController`) for potential admin dashboard integration:
-
-```
-POST /api/v1/auth/register
-POST /api/v1/auth/login
-POST /api/v1/auth/logout
-```
-
-### 3. API Key Management via API
-
-While the `apikey:generate` artisan command exists, there's also an `ApiKeyController@store` endpoint for creating API keys programmatically (requires Sanctum auth).
-
-### 4. License Key Listing
+### 2. License Key Listing
 
 `LicenseKeyController@index` and `@show` exist but are not currently routed, as listing keys was not in the user stories.
+
+### 3. Additional Controller Methods
+
+Various controller methods exist for potential future use (e.g., batch operations, advanced filtering). These can be exposed via routes as requirements evolve.
+
+> **Note:** The codebase contains additional services, repositories, and helper classes that support extensibility. Explore the `app/` directory for the complete implementation.
 
 ---
 
@@ -1697,8 +1718,12 @@ This project uses **Laravel Sail** for local development, providing a consistent
 
 ### Prerequisites
 
-- WSL2 (Windows) or Linux/macOS
+- Docker Desktop (Windows/macOS) or Docker Engine (Linux)
+- WSL2 (Windows only)
 - Composer 2.x (for initial install only)
+- PHP 8.2+ (for initial composer install only)
+- Laravel 11.x
+- MySQL 8.x
 
 ### Setting Up Sail Alias
 
@@ -1721,8 +1746,8 @@ Now you can use `sail` instead of `./vendor/bin/sail`.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-repo/license-service.git
-cd license-service
+git clone https://github.com/abdulsamad245/group.one-technical-assessment.git
+cd group.one-technical-assessment
 
 # 2. Copy environment file
 cp .env.example .env
@@ -1997,15 +2022,11 @@ sail artisan apikey:generate rankmath "Postman Testing"
    Cache::remember("license_key:{$keyHash}", 3600, fn() => ...);
    ```
 
-5. **API Documentation**
-   - L5-Swagger is installed but docs need to be generated
-   - Run: `sail artisan l5-swagger:generate`
-
-6. **Audit Log UI**
+5. **Audit Log UI**
    - Expose license events via API for brand admins
    - Build timeline view of license lifecycle
 
-7. **Prometheus Metrics**
+6. **Prometheus Metrics**
    - Add `/metrics` endpoint for monitoring
    - Track: requests/sec, license counts, activation rates
 
@@ -2024,5 +2045,7 @@ This Centralized License Service provides a robust, scalable, and well-architect
 - ✅ CI/CD pipeline
 - ✅ Code quality tooling (Pint, PHPCS, PHPStan)
 - ✅ Sentry integration for observability
+- ✅ Swagger/OpenAPI documentation
+- ✅ Postman collection for API testing
 
 The codebase follows Laravel best practices with clean separation of concerns through Controllers, Services, Repositories, DTOs, and Events.
