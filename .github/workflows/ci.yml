@@ -108,7 +108,7 @@ jobs:
       # 13. Run diff coverage (fail if under 50%)
       - name: Run Diff Coverage
         run: |
-          diff-cover tests/report/coverage.xml --compare-branch=origin/develop --fail-under=50
+          diff-cover tests/report/coverage.xml --compare-branch=origin/main --fail-under=50
 
       # 14. Run Static Analysis Only (temporarily disabled PHPCS & Pint)
       - name: Run Static Analysis Only
