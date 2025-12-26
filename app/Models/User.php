@@ -105,7 +105,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is a super admin.
+     * Check if user is an super admin.
      */
     public function isSuperAdmin(): bool
     {
