@@ -91,7 +91,7 @@ jobs:
 
       - name: Run Diff Coverage
         run: |
-          diff-cover tests/report/coverage.xml --compare-branch=origin/main --fail-under=50
+          diff-cover tests/report/coverage.xml --compare-branch=origin/develop --fail-under=50
 
       - name: Lint and Run Static Analysis
         run: |
