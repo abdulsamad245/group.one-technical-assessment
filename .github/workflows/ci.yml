@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "develop", "main" ]
+    branches: [ "develop", "trunk" ]
   pull_request:
-    branches: [ "develop", "main" ]
+    branches: [ "develop", "trunk" ]
 
 jobs:
   laravel-ci:
@@ -75,7 +75,7 @@ jobs:
             }
 
       - name: Check PR Task List Completion
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && (github.event.action == 'edited' || github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened')
         uses: wp-media/pr-checklist-action@master
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
@@ -91,7 +91,7 @@ jobs:
 
       - name: Run Diff Coverage
         run: |
-          diff-cover tests/report/coverage.xml --compare-branch=origin/main --fail-under=50
+          diff-cover tests/report/coverage.xml --compare-branch=origin/trunk --fail-under=50
 
       - name: Lint and Run Static Analysis
         run: |
