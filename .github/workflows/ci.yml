@@ -91,6 +91,7 @@ jobs:
 
       - name: Run Diff Coverage
         run: |
+          git fetch origin trunk
           diff-cover tests/report/coverage.xml --compare-branch=origin/trunk --fail-under=50
 
       - name: Lint and Run Static Analysis
