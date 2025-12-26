@@ -106,10 +106,10 @@ class LicenseKey extends Model
         return $this->hasManyThrough(
             Activation::class,
             License::class,
-            'license_key_id', 
-            'license_id',     
-            'id',             
-            'id'             
+            'license_key_id',
+            'license_id',
+            'id',
+            'id'
         );
     }
 
@@ -121,10 +121,10 @@ class LicenseKey extends Model
         return $this->hasManyThrough(
             Activation::class,
             License::class,
-            'license_key_id', 
-            'license_id',     
-            'id',             
-            'id'             
+            'license_key_id',
+            'license_id',
+            'id',
+            'id'
         )->where('activations.status', ActivationStatus::ACTIVE);
     }
 
