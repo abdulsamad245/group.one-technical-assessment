@@ -34,8 +34,8 @@ class StoreLicenseKeyRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'license_id.required' => __('messages.license-id-required'),
-            'license_id.exists' => __('messages.license-not-found'),
+            'license_id.required' => __('messages.license_id_required'),
+            'license_id.exists' => __('messages.license_not_found'),
         ];
     }
 }

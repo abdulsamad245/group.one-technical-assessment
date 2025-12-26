@@ -48,7 +48,7 @@ class StoreLicenseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'expires_at.after' => __('messages.invalid-date'),
+            'expires_at.after' => __('messages.invalid_date'),
         ];
     }
 

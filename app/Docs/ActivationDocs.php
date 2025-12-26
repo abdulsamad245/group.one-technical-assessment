@@ -30,7 +30,7 @@ class ActivationDocs
      *         @OA\JsonContent(
      *             required={"license_key", "product_slug", "instance_type", "instance_value"},
      *
-     *             @OA\Property(property="license_key", type="string", example="ABCDE-FGHIJ-KLMNO-PQRST-UVWXY", description="The license key to activate (5 groups of 5 characters)"),
+     *             @OA\Property(property="license_key", type="string", example="ABCDE-FGHIJ-KLMNO-PQRST-UVWXY", description="The license key to activate"),
      *             @OA\Property(property="product_slug", type="string", example="wp-rocket-pro", description="The product slug for this activation (machine-friendly identifier)"),
      *             @OA\Property(
      *                 property="instance_type",
@@ -147,7 +147,7 @@ class ActivationDocs
      *         name="license_key",
      *         in="query",
      *         required=true,
-     *         description="The license key to check (5 groups of 5 characters)",
+     *         description="The license key to check",
      *
      *         @OA\Schema(type="string", example="ABCDE-FGHIJ-KLMNO-PQRST-UVWXY")
      *     ),

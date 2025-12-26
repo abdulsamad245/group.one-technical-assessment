@@ -35,9 +35,9 @@ class DeactivateLicenseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'activation_id.required' => __('messages.activation-id-required'),
-            'activation_id.uuid' => __('messages.activation-id-invalid'),
-            'activation_id.exists' => __('messages.activation-not-found'),
+            'activation_id.required' => __('messages.activation_id_required'),
+            'activation_id.uuid' => __('messages.activation_id_invalid'),
+            'activation_id.exists' => __('messages.activation_not_found'),
         ];
     }
 

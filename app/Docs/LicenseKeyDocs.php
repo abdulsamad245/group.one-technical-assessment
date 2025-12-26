@@ -11,7 +11,7 @@ class LicenseKeyDocs
      * @OA\Get(
      *     path="/v1/license-keys/key/{key}",
      *     summary="Get a license key by key string",
-     *     description="Retrieve full details of a license key by its key string (5 groups of 5 characters). Includes status, entitlements, associated licenses, and remaining activation slots per instance.",
+     *     description="Retrieve full details of a license key by its key string. Includes status, entitlements, associated licenses, and remaining activation slots per instance.",
      *     operationId="getLicenseKeyByKey",
      *     tags={"License Keys"},
      *
@@ -19,7 +19,7 @@ class LicenseKeyDocs
      *         name="key",
      *         in="path",
      *         required=true,
-     *         description="The license key string (5 groups of 5 characters)",
+     *         description="The license key string",
      *
      *         @OA\Schema(type="string", example="ABCDE-FGHIJ-KLMNO-PQRST-UVWXY")
      *     ),

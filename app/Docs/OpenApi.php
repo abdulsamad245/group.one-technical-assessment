@@ -64,7 +64,7 @@ All API requests support the `X-Correlation-ID` header for request tracing. If n
  * )
  * @OA\Tag(
  *     name="License Keys",
- *     description="License key management endpoints - Generate and manage license keys (5 groups of 5 characters)"
+ *     description="License key management endpoints - Generate and manage license keys"
  * )
  * @OA\Tag(
  *     name="Activations",

@@ -52,7 +52,7 @@
                                 ],
                                 "properties": {
                                     "license_key": {
-                                        "description": "The license key to activate (5 groups of 5 characters)",
+                                        "description": "The license key to activate",
                                         "type": "string",
                                         "example": "ABCDE-FGHIJ-KLMNO-PQRST-UVWXY"
                                     },
@@ -261,7 +261,7 @@
                     {
                         "name": "license_key",
                         "in": "query",
-                        "description": "The license key to check (5 groups of 5 characters)",
+                        "description": "The license key to check",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1267,13 +1267,13 @@
                     "License Keys"
                 ],
                 "summary": "Get a license key by key string",
-                "description": "Retrieve full details of a license key by its key string (5 groups of 5 characters). Includes status, entitlements, associated licenses, and remaining activation slots per instance.",
+                "description": "Retrieve full details of a license key by its key string. Includes status, entitlements, associated licenses, and remaining activation slots per instance.",
                 "operationId": "getLicenseKeyByKey",
                 "parameters": [
                     {
                         "name": "key",
                         "in": "path",
-                        "description": "The license key string (5 groups of 5 characters)",
+                        "description": "The license key string",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1939,7 +1939,7 @@
         },
         {
             "name": "License Keys",
-            "description": "License key management endpoints - Generate and manage license keys (5 groups of 5 characters)"
+            "description": "License key management endpoints - Generate and manage license keys"
         },
         {
             "name": "Activations",

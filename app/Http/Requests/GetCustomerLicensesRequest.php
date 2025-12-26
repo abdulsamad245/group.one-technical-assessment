@@ -35,8 +35,8 @@ class GetCustomerLicensesRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => __('messages.email-required'),
-            'email.email' => __('messages.email-invalid'),
+            'email.required' => __('messages.email_required'),
+            'email.email' => __('messages.email_invalid'),
         ];
     }
 
