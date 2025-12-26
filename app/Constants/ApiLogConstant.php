@@ -10,7 +10,7 @@ class ApiLogConstant
     // Table name
     public const TABLE = 'api_logs';
 
-// Columns
+    // Columns
     public const ID = 'id';
     public const CORRELATION_ID = 'correlation_id';
     public const METHOD = 'method';

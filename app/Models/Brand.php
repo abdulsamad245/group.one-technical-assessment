@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\BrandConstant;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,18 +16,25 @@ class Brand extends Model
     use SoftDeletes;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = BrandConstant::TABLE;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'slug',
-        'description',
-        'contact_email',
-        'website',
-        'settings',
-        'is_active',
+        BrandConstant::NAME,
+        BrandConstant::SLUG,
+        BrandConstant::DESCRIPTION,
+        BrandConstant::CONTACT_EMAIL,
+        BrandConstant::WEBSITE,
+        BrandConstant::SETTINGS,
+        BrandConstant::IS_ACTIVE,
     ];
 
     /**
@@ -35,11 +43,11 @@ class Brand extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'settings' => 'array',
-        'is_active' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
+        BrandConstant::SETTINGS => 'array',
+        BrandConstant::IS_ACTIVE => 'boolean',
+        BrandConstant::CREATED_AT => 'datetime',
+        BrandConstant::UPDATED_AT => 'datetime',
+        BrandConstant::DELETED_AT => 'datetime',
     ];
 
     /**
@@ -66,6 +74,6 @@ class Brand extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where(BrandConstant::IS_ACTIVE, true);
     }
 }

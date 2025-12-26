@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\ApiKeyConstant;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,13 @@ class ApiKey extends Model
     use SoftDeletes;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = ApiKeyConstant::TABLE;
+
+    /**
      * Indicates if the IDs are auto-incrementing.
      *
      * @var bool
@@ -54,15 +62,15 @@ class ApiKey extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'id',
-        'brand_id',
-        'name',
-        'key',
-        'prefix',
-        'permissions',
-        'last_used_at',
-        'expires_at',
-        'is_active',
+        ApiKeyConstant::ID,
+        ApiKeyConstant::BRAND_ID,
+        ApiKeyConstant::NAME,
+        ApiKeyConstant::KEY,
+        ApiKeyConstant::PREFIX,
+        ApiKeyConstant::PERMISSIONS,
+        ApiKeyConstant::LAST_USED_AT,
+        ApiKeyConstant::EXPIRES_AT,
+        ApiKeyConstant::IS_ACTIVE,
     ];
 
     /**
@@ -71,13 +79,13 @@ class ApiKey extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'permissions' => 'array',
-        'last_used_at' => 'datetime',
-        'expires_at' => 'datetime',
-        'is_active' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
+        ApiKeyConstant::PERMISSIONS => 'array',
+        ApiKeyConstant::LAST_USED_AT => 'datetime',
+        ApiKeyConstant::EXPIRES_AT => 'datetime',
+        ApiKeyConstant::IS_ACTIVE => 'boolean',
+        ApiKeyConstant::CREATED_AT => 'datetime',
+        ApiKeyConstant::UPDATED_AT => 'datetime',
+        ApiKeyConstant::DELETED_AT => 'datetime',
     ];
 
     /**
@@ -86,7 +94,7 @@ class ApiKey extends Model
      * @var array<int, string>
      */
     protected $hidden = [
-        'key',
+        ApiKeyConstant::KEY,
     ];
 
     /**
@@ -137,11 +145,12 @@ class ApiKey extends Model
      */
     public function isValid(): bool
     {
-        if (! $this->is_active) {
+        if (! $this->{ApiKeyConstant::IS_ACTIVE}) {
             return false;
         }
 
-        if ($this->expires_at && $this->expires_at->isPast()) {
+        $expiresAt = $this->{ApiKeyConstant::EXPIRES_AT};
+        if ($expiresAt && $expiresAt->isPast()) {
             return false;
         }
 
@@ -153,7 +162,7 @@ class ApiKey extends Model
      */
     public function markAsUsed(): void
     {
-        $this->last_used_at = now();
+        $this->{ApiKeyConstant::LAST_USED_AT} = now();
         $this->save();
     }
 
@@ -165,10 +174,10 @@ class ApiKey extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('is_active', true)
+        return $query->where(ApiKeyConstant::IS_ACTIVE, true)
             ->where(function ($q) {
-                $q->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', now());
+                $q->whereNull(ApiKeyConstant::EXPIRES_AT)
+                    ->orWhere(ApiKeyConstant::EXPIRES_AT, '>', now());
             });
     }
 }

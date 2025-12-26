@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\LicenseKeyConstant;
 use App\Enums\ActivationStatus;
 use App\Enums\LicenseKeyStatus;
 use App\Scopes\LicenseKeyBrandScope;
@@ -20,6 +21,13 @@ class LicenseKey extends Model
     use SoftDeletes;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = LicenseKeyConstant::TABLE;
+
+    /**
      * The "booted" method of the model.
      */
     protected static function booted(): void
@@ -33,14 +41,14 @@ class LicenseKey extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'id',
-        'brand_id',
-        'customer_email',
-        'key',
-        'key_hash',
-        'status',
-        'expires_at',
-        'metadata',
+        LicenseKeyConstant::ID,
+        LicenseKeyConstant::BRAND_ID,
+        LicenseKeyConstant::CUSTOMER_EMAIL,
+        LicenseKeyConstant::KEY,
+        LicenseKeyConstant::KEY_HASH,
+        LicenseKeyConstant::STATUS,
+        LicenseKeyConstant::EXPIRES_AT,
+        LicenseKeyConstant::METADATA,
     ];
 
     /**
@@ -49,7 +57,7 @@ class LicenseKey extends Model
      * @var array<int, string>
      */
     protected $encryptable = [
-        'key',
+        LicenseKeyConstant::KEY,
     ];
 
     /**
@@ -58,13 +66,11 @@ class LicenseKey extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'activated_at' => 'datetime',
-        'expires_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
-        'key' => 'encrypted', // Encrypt license keys
-        'status' => LicenseKeyStatus::class,
+        LicenseKeyConstant::EXPIRES_AT => 'datetime',
+        LicenseKeyConstant::CREATED_AT => 'datetime',
+        LicenseKeyConstant::UPDATED_AT => 'datetime',
+        LicenseKeyConstant::KEY => 'encrypted',
+        LicenseKeyConstant::STATUS => LicenseKeyStatus::class,
     ];
 
     /**
@@ -73,7 +79,7 @@ class LicenseKey extends Model
      * @var array<string, mixed>
      */
     protected $attributes = [
-        'status' => 'active',
+        LicenseKeyConstant::STATUS => 'active',
     ];
 
     /**
@@ -100,10 +106,10 @@ class LicenseKey extends Model
         return $this->hasManyThrough(
             Activation::class,
             License::class,
-            'license_key_id', // Foreign key on licenses table
-            'license_id',     // Foreign key on activations table
-            'id',             // Local key on license_keys table
-            'id'              // Local key on licenses table
+            'license_key_id', 
+            'license_id',     
+            'id',             
+            'id'             
         );
     }
 
@@ -115,10 +121,10 @@ class LicenseKey extends Model
         return $this->hasManyThrough(
             Activation::class,
             License::class,
-            'license_key_id', // Foreign key on licenses table
-            'license_id',     // Foreign key on activations table
-            'id',             // Local key on license_keys table
-            'id'              // Local key on licenses table
+            'license_key_id', 
+            'license_id',     
+            'id',             
+            'id'             
         )->where('activations.status', ActivationStatus::ACTIVE);
     }
 
@@ -127,7 +133,7 @@ class LicenseKey extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('status', LicenseKeyStatus::ACTIVE);
+        return $query->where(LicenseKeyConstant::STATUS, LicenseKeyStatus::ACTIVE);
     }
 
     /**
@@ -135,7 +141,7 @@ class LicenseKey extends Model
      */
     public function isValid(): bool
     {
-        return $this->status === LicenseKeyStatus::ACTIVE
-            && (! $this->expires_at || $this->expires_at->isFuture());
+        return $this->{LicenseKeyConstant::STATUS} === LicenseKeyStatus::ACTIVE
+            && (! $this->{LicenseKeyConstant::EXPIRES_AT} || $this->{LicenseKeyConstant::EXPIRES_AT}->isFuture());
     }
 }

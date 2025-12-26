@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\LicenseConstant;
 use App\Enums\LicenseStatus;
 use App\Enums\LicenseType;
 use App\Scopes\BrandScope;
@@ -19,25 +20,32 @@ class License extends Model
     use SoftDeletes;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = LicenseConstant::TABLE;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'id',
-        'license_key_id',
-        'brand_id',
-        'customer_email',
-        'customer_name',
-        'product_name',
-        'product_slug',
-        'product_sku',
-        'license_type',
-        'max_activations_per_instance',
-        'current_activations',
-        'expires_at',
-        'status',
-        'metadata',
+        LicenseConstant::ID,
+        LicenseConstant::LICENSE_KEY_ID,
+        LicenseConstant::BRAND_ID,
+        LicenseConstant::CUSTOMER_EMAIL,
+        LicenseConstant::CUSTOMER_NAME,
+        LicenseConstant::PRODUCT_NAME,
+        LicenseConstant::PRODUCT_SLUG,
+        LicenseConstant::PRODUCT_SKU,
+        LicenseConstant::LICENSE_TYPE,
+        LicenseConstant::MAX_ACTIVATIONS_PER_INSTANCE,
+        LicenseConstant::CURRENT_ACTIVATIONS,
+        LicenseConstant::EXPIRES_AT,
+        LicenseConstant::STATUS,
+        LicenseConstant::METADATA,
     ];
 
     /**
@@ -46,16 +54,16 @@ class License extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'max_activations_per_instance' => 'array',
-        'current_activations' => 'integer',
-        'expires_at' => 'datetime',
-        'metadata' => 'array',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
-        'customer_email' => 'encrypted', // Encrypt customer email (PII)
-        'status' => LicenseStatus::class,
-        'license_type' => LicenseType::class,
+        LicenseConstant::MAX_ACTIVATIONS_PER_INSTANCE => 'array',
+        LicenseConstant::CURRENT_ACTIVATIONS => 'integer',
+        LicenseConstant::EXPIRES_AT => 'datetime',
+        LicenseConstant::METADATA => 'array',
+        LicenseConstant::CREATED_AT => 'datetime',
+        LicenseConstant::UPDATED_AT => 'datetime',
+        LicenseConstant::DELETED_AT => 'datetime',
+        LicenseConstant::CUSTOMER_EMAIL => 'encrypted',
+        LicenseConstant::STATUS => LicenseStatus::class,
+        LicenseConstant::LICENSE_TYPE => LicenseType::class,
     ];
 
     /**
@@ -64,8 +72,8 @@ class License extends Model
      * @var array<string, mixed>
      */
     protected $attributes = [
-        'current_activations' => 0,
-        'status' => 'active',
+        LicenseConstant::CURRENT_ACTIVATIONS => 0,
+        LicenseConstant::STATUS => 'active',
     ];
 
     /**
@@ -105,7 +113,7 @@ class License extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('status', LicenseStatus::ACTIVE);
+        return $query->where(LicenseConstant::STATUS, LicenseStatus::ACTIVE);
     }
 
     /**
@@ -113,7 +121,7 @@ class License extends Model
      */
     public function scopeByCustomerEmail($query, string $email)
     {
-        return $query->where('customer_email', $email);
+        return $query->where(LicenseConstant::CUSTOMER_EMAIL, $email);
     }
 
     /**
@@ -121,11 +129,12 @@ class License extends Model
      */
     public function isExpired(): bool
     {
-        if ($this->license_type === LicenseType::PERPETUAL) {
+        if ($this->{LicenseConstant::LICENSE_TYPE} === LicenseType::PERPETUAL) {
             return false;
         }
 
-        return $this->expires_at && $this->expires_at->isPast();
+        $expiresAt = $this->{LicenseConstant::EXPIRES_AT};
+        return $expiresAt && $expiresAt->isPast();
     }
 
     /**
@@ -134,7 +143,7 @@ class License extends Model
      */
     public function canActivate(): bool
     {
-        return $this->status === LicenseStatus::ACTIVE
+        return $this->{LicenseConstant::STATUS} === LicenseStatus::ACTIVE
             && ! $this->isExpired();
     }
 
@@ -143,7 +152,7 @@ class License extends Model
      */
     public function incrementActivations(): void
     {
-        $this->increment('current_activations');
+        $this->increment(LicenseConstant::CURRENT_ACTIVATIONS);
     }
 
     /**
@@ -151,6 +160,6 @@ class License extends Model
      */
     public function decrementActivations(): void
     {
-        $this->decrement('current_activations');
+        $this->decrement(LicenseConstant::CURRENT_ACTIVATIONS);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\UserConstant;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,16 +38,23 @@ class User extends Authenticatable
     use SoftDeletes;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = UserConstant::TABLE;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'brand_id',
-        'name',
-        'email',
-        'password',
-        'role',
+        UserConstant::BRAND_ID,
+        UserConstant::NAME,
+        UserConstant::EMAIL,
+        UserConstant::PASSWORD,
+        UserConstant::ROLE,
     ];
 
     /**
@@ -55,8 +63,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        UserConstant::PASSWORD,
+        UserConstant::REMEMBER_TOKEN,
     ];
 
     /**
@@ -67,8 +75,8 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            UserConstant::EMAIL_VERIFIED_AT => 'datetime',
+            UserConstant::PASSWORD => 'hashed',
         ];
     }
 
@@ -85,7 +93,7 @@ class User extends Authenticatable
      */
     public function hasRole(string $role): bool
     {
-        return $this->role === $role;
+        return $this->{UserConstant::ROLE} === $role;
     }
 
     /**
@@ -93,7 +101,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return in_array($this->role, ['admin', 'super_admin']);
+        return in_array($this->{UserConstant::ROLE}, [UserConstant::ROLE_ADMIN, UserConstant::ROLE_SUPER_ADMIN]);
     }
 
     /**
@@ -101,7 +109,7 @@ class User extends Authenticatable
      */
     public function isSuperAdmin(): bool
     {
-        return $this->role === 'super_admin';
+        return $this->{UserConstant::ROLE} === UserConstant::ROLE_SUPER_ADMIN;
     }
 
     /**
@@ -109,7 +117,7 @@ class User extends Authenticatable
      */
     public function scopeRole($query, string $role)
     {
-        return $query->where('role', $role);
+        return $query->where(UserConstant::ROLE, $role);
     }
 
     /**
@@ -117,6 +125,6 @@ class User extends Authenticatable
      */
     public function scopeAdmins($query)
     {
-        return $query->whereIn('role', ['admin', 'super_admin']);
+        return $query->whereIn(UserConstant::ROLE, [UserConstant::ROLE_ADMIN, UserConstant::ROLE_SUPER_ADMIN]);
     }
 }

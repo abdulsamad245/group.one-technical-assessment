@@ -542,6 +542,26 @@ All endpoints are versioned under `/api/v1/` to ensure backward compatibility as
 | API Key | Brand license management, customer queries | `X-API-Key: {key}` |
 | Sanctum Token | Auth endpoints (logout), API key creation | `Authorization: Bearer {token}` |
 
+### Security & Encryption
+
+#### Encryption at Rest
+
+| Data | Method | Description |
+|------|--------|-------------|
+| License Keys | AES-256-CBC | Encrypted using Laravel's `encrypted` cast with `APP_KEY` |
+| API Keys | SHA-256 Hash | Hashed before storage; plain key shown only once at creation |
+| User Passwords | Bcrypt (12 rounds) | Laravel's default password hashing |
+| License Key Hash | SHA-256 | Stored in `key_hash` column for lookups without decryption |
+
+#### Encryption in Transit
+
+| Layer | Status | Notes |
+|-------|--------|-------|
+| Application | Not enforced | No HTTPS redirect at app level |
+| Infrastructure | **Recommended** | Configure TLS/SSL at load balancer or reverse proxy (nginx, AWS ALB, Cloudflare) |
+
+> **Production Recommendation:** Enable HTTPS at the infrastructure level (nginx, load balancer, or CDN).
+
 ### Endpoint Overview
 
 #### Public Routes (No Authentication Required)

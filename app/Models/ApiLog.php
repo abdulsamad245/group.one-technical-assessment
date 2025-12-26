@@ -28,7 +28,7 @@ class ApiLog extends Model
         ApiLogConstant::CORRELATION_ID,
         ApiLogConstant::METHOD,
         ApiLogConstant::PATH,
-        'full_path',
+        ApiLogConstant::FULL_PATH,
         ApiLogConstant::IP_ADDRESS,
         ApiLogConstant::USER_AGENT,
         ApiLogConstant::REQUEST_HEADERS,

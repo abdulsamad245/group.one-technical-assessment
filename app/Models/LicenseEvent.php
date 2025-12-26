@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\LicenseEventConstant;
 use App\Scopes\LicenseEventBrandScope;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +13,13 @@ class LicenseEvent extends Model
 {
     use HasFactory;
     use HasUuid;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = LicenseEventConstant::TABLE;
 
     /**
      * The "booted" method of the model.
@@ -27,12 +35,12 @@ class LicenseEvent extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'license_id',
-        'event_type',
-        'description',
-        'event_data',
-        'ip_address',
-        'user_agent',
+        LicenseEventConstant::LICENSE_ID,
+        LicenseEventConstant::EVENT_TYPE,
+        LicenseEventConstant::DESCRIPTION,
+        LicenseEventConstant::EVENT_DATA,
+        LicenseEventConstant::IP_ADDRESS,
+        LicenseEventConstant::USER_AGENT,
     ];
 
     /**
@@ -41,9 +49,9 @@ class LicenseEvent extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'event_data' => 'array',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        LicenseEventConstant::EVENT_DATA => 'array',
+        LicenseEventConstant::CREATED_AT => 'datetime',
+        LicenseEventConstant::UPDATED_AT => 'datetime',
     ];
 
     /**
@@ -59,6 +67,6 @@ class LicenseEvent extends Model
      */
     public function scopeByType($query, string $type)
     {
-        return $query->where('event_type', $type);
+        return $query->where(LicenseEventConstant::EVENT_TYPE, $type);
     }
 }

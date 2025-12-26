@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\ActivationConstant;
 use App\Enums\ActivationStatus;
 use App\Scopes\ActivationBrandScope;
 use App\Traits\HasUuid;
@@ -14,6 +15,13 @@ class Activation extends Model
 {
     use HasFactory;
     use HasUuid;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = ActivationConstant::TABLE;
 
     /**
      * The "booted" method of the model.
@@ -29,18 +37,18 @@ class Activation extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'license_id',
-        'device_identifier',
-        'device_name',
-        'instance_type',
-        'instance_value',
-        'ip_address',
-        'user_agent',
-        'status',
-        'activated_at',
-        'deactivated_at',
-        'last_checked_at',
-        'metadata',
+        ActivationConstant::LICENSE_ID,
+        ActivationConstant::DEVICE_IDENTIFIER,
+        ActivationConstant::DEVICE_NAME,
+        ActivationConstant::INSTANCE_TYPE,
+        ActivationConstant::INSTANCE_VALUE,
+        ActivationConstant::IP_ADDRESS,
+        ActivationConstant::USER_AGENT,
+        ActivationConstant::STATUS,
+        ActivationConstant::ACTIVATED_AT,
+        ActivationConstant::DEACTIVATED_AT,
+        ActivationConstant::LAST_CHECKED_AT,
+        ActivationConstant::METADATA,
     ];
 
     /**
@@ -49,15 +57,15 @@ class Activation extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'status' => \App\Enums\ActivationStatus::class,
-        'activated_at' => 'datetime',
-        'deactivated_at' => 'datetime',
-        'last_checked_at' => 'datetime',
-        'metadata' => 'array',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'device_identifier' => 'encrypted', // Encrypt device identifiers (PII)
-        'ip_address' => 'encrypted', // Encrypt IP addresses (PII)
+        ActivationConstant::STATUS => ActivationStatus::class,
+        ActivationConstant::ACTIVATED_AT => 'datetime',
+        ActivationConstant::DEACTIVATED_AT => 'datetime',
+        ActivationConstant::LAST_CHECKED_AT => 'datetime',
+        ActivationConstant::METADATA => 'array',
+        ActivationConstant::CREATED_AT => 'datetime',
+        ActivationConstant::UPDATED_AT => 'datetime',
+        ActivationConstant::DEVICE_IDENTIFIER => 'encrypted',
+        ActivationConstant::IP_ADDRESS => 'encrypted',
     ];
 
     /**
@@ -76,10 +84,10 @@ class Activation extends Model
         return $this->hasOneThrough(
             LicenseKey::class,
             License::class,
-            'id',           // Foreign key on licenses table (license_id on activations points to this)
-            'id',           // Foreign key on license_keys table
-            'license_id',   // Local key on activations table
-            'license_key_id' // Local key on licenses table
+            ActivationConstant::ID,
+            ActivationConstant::ID,
+            ActivationConstant::LICENSE_ID,
+            ActivationConstant::LICENSE_KEY_ID
         );
     }
 
@@ -88,7 +96,7 @@ class Activation extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('status', ActivationStatus::ACTIVE);
+        return $query->where(ActivationConstant::STATUS, ActivationStatus::ACTIVE);
     }
 
     /**
@@ -97,8 +105,8 @@ class Activation extends Model
     public function deactivate(): void
     {
         $this->update([
-            'status' => ActivationStatus::INACTIVE,
-            'deactivated_at' => now(),
+            ActivationConstant::STATUS => ActivationStatus::INACTIVE,
+            ActivationConstant::DEACTIVATED_AT => now(),
         ]);
     }
 
@@ -107,6 +115,6 @@ class Activation extends Model
      */
     public function updateLastChecked(): void
     {
-        $this->update(['last_checked_at' => now()]);
+        $this->update([ActivationConstant::LAST_CHECKED_AT => now()]);
     }
 }
