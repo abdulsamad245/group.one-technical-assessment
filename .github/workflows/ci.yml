@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # CRITICAL: Get full history
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -91,8 +93,8 @@ jobs:
 
       - name: Run Diff Coverage
         run: |
-          git fetch origin trunk
-          diff-cover tests/report/coverage.xml --compare-branch=origin/trunk --fail-under=50
+          git fetch origin
+          diff-cover tests/report/coverage.xml --compare-branch=origin/develop --fail-under=50
 
       - name: Lint and Run Static Analysis
         run: |
