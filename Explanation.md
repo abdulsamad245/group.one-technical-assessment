@@ -1107,7 +1107,7 @@ if ($user->isSuperAdmin()) {
 
 **Duplicate License Prevention:**
 
-A license is unique per combination of `customer_email`, `brand_id`, and `product_slug`. If a license already exists for the same customer and product within a brand, the API returns a validation error with a friendly message suggesting to renew or upgrade the existing license instead.
+A license is unique per combination of `customer_email`, `brand_id`, and `product_slug`. If a license already exists for the same customer and product within a brand, the API returns a validation error message.
 
 | Scenario | Result |
 |----------|--------|
