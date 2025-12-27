@@ -1,0 +1,369 @@
+{
+  "info": {
+    "_postman_id": "license-service-collection",
+    "name": "License Service API",
+    "description": "group.one Centralized License Service API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "lcs_abc12345.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "type": "string"
+    },
+    {
+      "key": "sanctum_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "license_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "activation_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "license_key",
+      "value": "ABCDE-FGHIJ-KLMNO-PQRST-UVWXY",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@mailinator.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"brand_name\": \"RankMath\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@mailinator.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{sanctum_token}}"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "API Keys",
+      "item": [
+        {
+          "name": "Create API Key",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{sanctum_token}}"},
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Production API Key\",\n  \"permissions\": [\"licenses:read\", \"licenses:write\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/api-keys",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "api-keys"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Licenses",
+      "item": [
+        {
+          "name": "List Licenses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "X-API-Key", "value": "{{api_key}}"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/licenses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "licenses"]
+            }
+          }
+        },
+        {
+          "name": "Create License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "X-API-Key", "value": "{{api_key}}"},
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_email\": \"customer@mailinator.com\",\n  \"customer_name\": \"Jane Smith\",\n  \"product_name\": \"RankMath Pro\",\n  \"product_slug\": \"rankmath-pro\",\n  \"license_type\": \"subscription\",\n  \"max_activations_per_instance\": {\n    \"site_url\": 5\n  },\n  \"expires_at\": \"2026-12-25T00:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/licenses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "licenses"]
+            }
+          }
+        },
+        {
+          "name": "Get License",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "X-API-Key", "value": "{{api_key}}"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/licenses/{{license_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "licenses", "{{license_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update License",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "X-API-Key", "value": "{{api_key}}"},
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_name\": \"Jane Smith Updated\",\n  \"metadata\": {\n    \"notes\": \"VIP customer\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/licenses/{{license_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "licenses", "{{license_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Renew License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "X-API-Key", "value": "{{api_key}}"},
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"days\": 365\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/licenses/{{license_id}}/renew",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "licenses", "{{license_id}}", "renew"]
+            }
+          }
+        },
+        {
+          "name": "Suspend License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "X-API-Key", "value": "{{api_key}}"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/licenses/{{license_id}}/suspend",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "licenses", "{{license_id}}", "suspend"]
+            }
+          }
+        },
+        {
+          "name": "Resume License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "X-API-Key", "value": "{{api_key}}"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/licenses/{{license_id}}/resume",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "licenses", "{{license_id}}", "resume"]
+            }
+          }
+        },
+        {
+          "name": "Cancel License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "X-API-Key", "value": "{{api_key}}"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/licenses/{{license_id}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "licenses", "{{license_id}}", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Activations",
+      "item": [
+        {
+          "name": "Activate License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"license_key\": \"{{license_key}}\",\n  \"product_slug\": \"rankmath-pro\",\n  \"instance_type\": \"site_url\",\n  \"instance_value\": \"https://mysite.com\",\n  \"device_name\": \"My WordPress Site\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/activations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "activations"]
+            }
+          }
+        },
+        {
+          "name": "Check License Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/activations/status?license_key={{license_key}}&product_slug=rankmath-pro",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "activations", "status"],
+              "query": [
+                {"key": "license_key", "value": "{{license_key}}"},
+                {"key": "product_slug", "value": "rankmath-pro"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Deactivate License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activation_id\": \"{{activation_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/deactivations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "deactivations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "License Keys",
+      "item": [
+        {
+          "name": "Get License Key by Key",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/license-keys/key/{{license_key}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "license-keys", "key", "{{license_key}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Get Customer Licenses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "X-API-Key", "value": "{{api_key}}"},
+              {"key": "Accept", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/customers/licenses?email=customer@mailinator.com",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "customers", "licenses"],
+              "query": [
+                {"key": "email", "value": "customer@mailinator.com"}
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
