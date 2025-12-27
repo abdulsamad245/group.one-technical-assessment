@@ -140,6 +140,106 @@ class LicenseApiTest extends TestCase
             ->assertJsonValidationErrors(['product_slug']);
     }
 
+    public function test_cannot_create_duplicate_license_for_same_customer_and_product(): void
+    {
+        // First license creation should succeed
+        $firstResponse = $this->postJsonWithApiKey('/api/v1/licenses', [
+            'customer_email' => 'customer@example.com',
+            'customer_name' => 'John Doe',
+            'product_name' => 'RankMath Pro',
+            'product_slug' => 'rankmath-pro',
+            'license_type' => LicenseType::SUBSCRIPTION->value,
+            'max_activations_per_instance' => ['site_url' => 5],
+            'expires_at' => now()->addYear()->toDateTimeString(),
+        ]);
+
+        $firstResponse->assertStatus(201);
+
+        // Second license for same customer and product should fail
+        $secondResponse = $this->postJsonWithApiKey('/api/v1/licenses', [
+            'customer_email' => 'customer@example.com',
+            'customer_name' => 'John Doe',
+            'product_name' => 'RankMath Pro',
+            'product_slug' => 'rankmath-pro',
+            'license_type' => LicenseType::SUBSCRIPTION->value,
+            'max_activations_per_instance' => ['site_url' => 5],
+            'expires_at' => now()->addYear()->toDateTimeString(),
+        ]);
+
+        $secondResponse->assertStatus(422)
+            ->assertJsonValidationErrors(['product_slug'])
+            ->assertJsonFragment([
+                'product_slug' => [__('messages.license_already_exists_for_customer')],
+            ]);
+
+        // Only one license should exist
+        $this->assertDatabaseCount('licenses', 1);
+    }
+
+    public function test_can_create_license_for_same_customer_different_product(): void
+    {
+        // First license for product A
+        $firstResponse = $this->postJsonWithApiKey('/api/v1/licenses', [
+            'customer_email' => 'customer@example.com',
+            'customer_name' => 'John Doe',
+            'product_name' => 'RankMath Pro',
+            'product_slug' => 'rankmath-pro',
+            'license_type' => LicenseType::SUBSCRIPTION->value,
+            'max_activations_per_instance' => ['site_url' => 5],
+            'expires_at' => now()->addYear()->toDateTimeString(),
+        ]);
+
+        $firstResponse->assertStatus(201);
+
+        // Second license for same customer but different product should succeed
+        $secondResponse = $this->postJsonWithApiKey('/api/v1/licenses', [
+            'customer_email' => 'customer@example.com',
+            'customer_name' => 'John Doe',
+            'product_name' => 'Content AI',
+            'product_slug' => 'content-ai',
+            'license_type' => LicenseType::SUBSCRIPTION->value,
+            'max_activations_per_instance' => ['site_url' => 3],
+            'expires_at' => now()->addYear()->toDateTimeString(),
+        ]);
+
+        $secondResponse->assertStatus(201);
+
+        // Both licenses should exist
+        $this->assertDatabaseCount('licenses', 2);
+    }
+
+    public function test_can_create_same_product_license_for_different_customers(): void
+    {
+        // License for customer A
+        $firstResponse = $this->postJsonWithApiKey('/api/v1/licenses', [
+            'customer_email' => 'customer-a@example.com',
+            'customer_name' => 'Customer A',
+            'product_name' => 'RankMath Pro',
+            'product_slug' => 'rankmath-pro',
+            'license_type' => LicenseType::SUBSCRIPTION->value,
+            'max_activations_per_instance' => ['site_url' => 5],
+            'expires_at' => now()->addYear()->toDateTimeString(),
+        ]);
+
+        $firstResponse->assertStatus(201);
+
+        // Same product for customer B should succeed
+        $secondResponse = $this->postJsonWithApiKey('/api/v1/licenses', [
+            'customer_email' => 'customer-b@example.com',
+            'customer_name' => 'Customer B',
+            'product_name' => 'RankMath Pro',
+            'product_slug' => 'rankmath-pro',
+            'license_type' => LicenseType::SUBSCRIPTION->value,
+            'max_activations_per_instance' => ['site_url' => 5],
+            'expires_at' => now()->addYear()->toDateTimeString(),
+        ]);
+
+        $secondResponse->assertStatus(201);
+
+        // Both licenses should exist
+        $this->assertDatabaseCount('licenses', 2);
+    }
+
     public function test_license_requires_max_activations_per_instance(): void
     {
         $response = $this->postJsonWithApiKey('/api/v1/licenses', [

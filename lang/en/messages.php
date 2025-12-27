@@ -44,6 +44,7 @@ return [
     'license_cannot_activate' => 'This license cannot be activated.',
     'license_expired' => 'This license has expired.',
     'license_not_active' => 'This license is not active.',
+    'license_already_exists_for_customer' => 'A license already exists for this customer and product.',
 
     /*
     |--------------------------------------------------------------------------
