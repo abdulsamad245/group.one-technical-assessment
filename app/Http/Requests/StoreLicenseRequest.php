@@ -2,11 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\DTOs\CreateLicenseDTO;
 use App\Enums\LicenseStatus;
 use App\Enums\LicenseType;
+use App\Rules\UniqueLicenseForCustomer;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\DTOs\CreateLicenseDTO;
 
 class StoreLicenseRequest extends FormRequest
 {
@@ -29,7 +30,13 @@ class StoreLicenseRequest extends FormRequest
             'customer_email' => ['required', 'email', 'max:255'],
             'customer_name' => ['required', 'string', 'max:255'],
             'product_name' => ['required', 'string', 'max:255'],
-            'product_slug' => ['required', 'string', 'max:255', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
+            'product_slug' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+                new UniqueLicenseForCustomer(),
+            ],
             'product_sku' => ['nullable', 'string', 'max:255'],
             'license_type' => ['required', Rule::in(LicenseType::values())],
             'max_activations_per_instance' => ['required', 'array'],
